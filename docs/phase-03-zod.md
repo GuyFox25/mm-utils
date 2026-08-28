@@ -19,16 +19,24 @@ unlisted is rejected with `400` naming the offending parameter.
 ## Implementation targets
 
 ### `primitives/`
-- [ ] `zUuid`, `zIntId`, `zEmail`, `zPhone`, `zSlug`, `zUrl`, `zIsoDate`, `zTimestamptz`.
-- [ ] `zPositiveInt`, `zMoneyCents`, `zNonEmptyString`, `zEnumFrom`, `zTrimmed`.
+- [ ] The opinionated few that zod core does not give you: `zMoneyCents`, `zSlug`,
+      `zEnumFrom`, `zTrimmed`.
+- [ ] **Do not wrap what zod v4 already ships.** Use `z.uuid()`, `z.email()`, `z.url()`,
+      `z.iso.date()`, `z.iso.datetime()`, `z.int().positive()`, `z.string().min(1)` directly.
 
 ### `coerce/`
-- [ ] `zBooleanQuery`, `zNumberQuery`, `zCsvArray` — query strings arrive as strings; coerce
-      **explicitly**, never guess. `limit=20` becomes a number because the schema says so.
+- [ ] `zCsvArray` — comma-separated lists (`active,pending` → `['active','pending']`), which
+      zod has no built-in for. Booleans use `z.stringbool()`; numbers use `z.coerce.number()`.
+      Coerce **explicitly**, never guess.
 
 ### `helpers/`
-- [ ] `stripMetaColumns` — compile-time duplicate-key detection via `UniqueTuple` (Phase 2).
-- [ ] `makePartialExcept`, `atLeastOneOf`, `dateRange`.
+- [ ] `atLeastOneOf` (a `.refine` that requires one of a set of keys). `makePartialExcept` and
+      `dateRange` are one-liners over zod's `.partial()` / `.refine()` — inline them where used
+      rather than exporting.
+- [ ] **No `stripMetaColumns`.** Entity create/update/select schemas are generated from the
+      Drizzle table with **drizzle-zod** (`createInsertSchema(table).omit({ id: true,
+      createdAt: true, updatedAt: true, version: true })`), which lives at the `@kit/drizzle`
+      layer. This package stays browser-safe and owns only the *query* DSL, not entity shapes.
 
 ### The DSL — the core of this phase
 - [ ] `filter/` — `FilterNode`, `FilterOperator`, `buildFilterSchema({ fields, relations, maxDepth })`.

@@ -46,9 +46,12 @@ about it.
 - [ ] `withTransaction`, `TransactionHost` (AsyncLocalStorage) — the binding the Nest
       `TransactionInterceptor` will drive in Phase 7.
 
-### `search/` and `seed/`
-- [ ] `trigramSearch(table, column, term, threshold)` using `pg_trgm`.
-- [ ] `seedTable` (`onConflictDoNothing`) and `seedInOrder` (respects FK ordering).
+## Not in this package — use a library
+
+| Was going to be here | Use instead |
+|---|---|
+| `seedTable` / `seedInOrder` | **`drizzle-seed`** (official, handles FK ordering and deterministic data) |
+| `trigramSearch(table, column, term, threshold)` | a two-line ``sql`similarity(${col}, ${term}) > ${threshold}` `` inlined in the one repository that needs `pg_trgm` — not worth a generic export |
 
 ## Verification gate
 

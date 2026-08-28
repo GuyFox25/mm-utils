@@ -16,6 +16,11 @@ specification. Where the two differ, the README wins — open an issue and fix t
 - **Resolve the open decision(s)** listed at the top of a phase *before* you write code for it.
 - **The promotion rule still applies inside the library:** if a helper is only used once,
   it does not need to be a public export yet.
+- **Reach for a library before writing a helper.** The kit is deliberately thin — lodash-es,
+  date-fns, type-fest, `@ts-rest/core`, `qs`, drizzle-zod, drizzle-seed, nestjs-zod,
+  `@nestjs/config`, `@nestjs/terminus` and `@nestjs/passport` do the everyday work. Each phase's "Not in this
+  package" note says what was deliberately left out and what replaces it. See the full table
+  in [`kit-README.md`](../kit-README.md).
 
 ## Phases
 

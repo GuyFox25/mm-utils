@@ -5,29 +5,33 @@ This roadmap tracks **building** the `@kit` toolkit. The authoritative specifica
 milestones, gates, and blockers. All boxes start unchecked — no implementation exists yet,
 only the workspace scaffold.
 
-Three rules gate every phase and are never traded away:
+Four rules gate every phase and are never traded away:
 
+- **Stay minimal.** Do not re-implement what a well-known library already does. lodash-es,
+  date-fns, type-fest, `@ts-rest/core`, `qs`, drizzle-seed, nestjs-zod, `@nestjs/config`,
+  `@nestjs/terminus` and `@nestjs/passport` cover the everyday work — the kit only holds
+  what none of them do. See the table in [`kit-README.md`](./kit-README.md).
 - **Dependencies point strictly downward** (see order below). `@kit/nest` may import
   `@kit/drizzle`; never the reverse.
 - **Every cross-package dependency is a peer dependency**, never a direct one. Two copies of
   Zod or Drizzle in one process is a day-long bug.
-- **Promotion rule:** nothing enters the library until it has been written a third time.
-  Two occurrences is a coincidence; three is a pattern.
+- **Promotion rule:** nothing enters the library until it has been written a third time *and*
+  no library already does it. Two occurrences is a coincidence; three is a pattern.
 
 ## Package dependency order (build bottom-up)
 
 ```
-@kit/core      zero runtime deps                     ← browser-safe
+@kit/core      zero runtime deps                                    ← browser-safe
     ↑
-@kit/zod       peer: zod                             ← browser-safe
+@kit/zod       peer: zod                                            ← browser-safe
     ↑
-@kit/http      peer: zod, @ts-rest/core              ← browser-safe
+@kit/http      peer: zod, @ts-rest/core, qs                         ← browser-safe
     ↑
-@kit/drizzle   peer: drizzle-orm, pg, deep-object-diff  ← server only
+@kit/drizzle   peer: drizzle-orm, pg, deep-object-diff, lodash-es   ← server only
     ↑
-@kit/nest      peer: @nestjs/common, @nestjs/core    ← server only
+@kit/nest      peer: @nestjs/common, @nestjs/core, nestjs-zod       ← server only
     ↑
-@kit/testing   peer: vitest                          ← dev only
+@kit/testing   peer: vitest                                         ← dev only
 ```
 
 ## Pre-flight — pin versions (do first)
@@ -42,6 +46,10 @@ Three rules gate every phase and are never traded away:
     and much current tooling do **not** support it yet, so the workspace is pinned to
     `~5.9.3`. Revisit once the ecosystem catches up.
   - `pg@8.23.0`, `@ts-rest/core@3.52.1`, `vitest@4.1.11`
+- [ ] Pin the peers the kit now leans on instead of re-implementing: `qs`, `lodash-es`,
+      `nestjs-zod`. Projects consuming the kit add `date-fns`, `type-fest`, `drizzle-zod`,
+      `@nestjs/config`, `@nestjs/terminus`, `@nestjs/passport`, `drizzle-seed`, `fishery`
+      themselves as needed — the kit does not depend on them.
 
 ## Open decisions — resolve before they block their phase
 
@@ -70,18 +78,25 @@ then debug.
       Gate: `pnpm install && pnpm -r build` passes; a plain Node script imports `@kit/core`.
 
 - [ ] **Phase 2 — `@kit/core`**
-      Scope: `types`, `Result`, the `AppError` hierarchy, `guards`, and the
-      array/object/string/number/date/async utilities.
+      Scope: the `AppError` hierarchy, money-cents helpers, `invariant`/`assertNever`, and
+      the few type helpers the kit needs (`Brand`, `NonEmptyArray`).
+      *Not here:* `Result` (→ neverthrow), and array/object/string/number/date/async helpers
+      (→ lodash-es, date-fns, nanoid, p-*).
       Gate: 100% of exports have tests; `pnpm why` shows zero runtime dependencies.
 
 - [ ] **Phase 3 — `@kit/zod`**
-      Scope: primitives, coercion, `stripMetaColumns`, `buildFilterSchema`,
-      `buildExpandSchema`, `buildQuerySchema`.
+      Scope: the opinionated primitives (`zMoneyCents`, `zSlug`, `zEnumFrom`, `zTrimmed`),
+      `zCsvArray`, `atLeastOneOf`, `buildFilterSchema`, `buildExpandSchema`,
+      `buildQuerySchema`.
+      *Not here:* `zUuid/zEmail/zUrl/zIsoDate/…` — use zod v4 built-ins directly; entity
+      create/update/select schemas — use drizzle-zod (Phase 5) with `.omit()`.
       Gate: a test proves an unlisted filter field, an unlisted expand path, and a
       past-`maxDepth` filter are each rejected with a message naming the offender.
 
 - [ ] **Phase 4 — `@kit/http`**
-      Scope: envelopes, cursor encode/decode, `parseBracketQuery`, `parseCompactQuery`.
+      Scope: envelopes, cursor encode/decode, and `qs`-backed `parseBracketQuery` /
+      `parseCompactQuery`.
+      *Not here:* the custom typed client + interceptors — use `@ts-rest/core`'s client.
       Gate: round-trip property test `decodeCursor(encodeCursor(x)) === x`; parser tests for
       both wire syntaxes including malformed input.
 
@@ -94,17 +109,22 @@ then debug.
 - [ ] **Phase 6 — `@kit/drizzle` part two: the repository**
       Scope: `BaseCrudRepository` (five methods), composite PK, soft delete, optimistic
       locking, `syncChildren`, `TransactionHost`.
+      *Not here:* seeding (→ drizzle-seed) and `trigramSearch` (inline raw `sql`).
       Gate: integration tests against a real Postgres in Docker, including a composite-PK
       table and a concurrent-update test proving `ConflictError` fires.
 
 - [ ] **Phase 7 — `@kit/nest`**
       Scope: `DbModule`, `BaseCrudService` (transactional read-diff-write), `createCrudController`,
-      pipes, guards, filters, interceptors, decorators, config, bootstrap.
+      `QueryParsePipe`/`ParsePkPipe`, `AppErrorFilter`/`PostgresExceptionFilter`,
+      `TransactionInterceptor`/`NoopUpdateInterceptor`, `createApp()`.
+      *Not here:* config (→ `@nestjs/config`), health (→ `@nestjs/terminus`), auth guards
+      (→ `@nestjs/passport`), Zod pipe/filter (→ nestjs-zod), logging (→ nestjs-pino).
       Gate: an example app exposes full CRUD; updating one field of ten issues an UPDATE
       touching exactly that field, and an empty update issues no UPDATE at all.
 
 - [ ] **Phase 8 — `@kit/testing` and docs**
-      Scope: factories, `withTestDb`, and a README per package with a runnable example.
+      Scope: `withTestDb`, `createTestingModule`, and a README per package with a runnable
+      example. *Not here:* factories (→ fishery + @faker-js/faker).
       Gate: `pnpm -r test` green from a clean clone.
 
 ## Definition of done (acceptance criteria)

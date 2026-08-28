@@ -25,7 +25,8 @@ is what makes pagination stable under concurrent inserts.
 - [ ] `encodeCursor`, `decodeCursor` — base64 of the sort key plus the tiebreak PK.
 
 ### `qs/` — pure parsing
-- [ ] `parseBracketQuery` — the primary syntax:
+- [ ] `parseBracketQuery` — the primary syntax, a **thin wrapper over the `qs` library** (do
+      not hand-roll a bracket parser):
       `?filter[status][in]=active,pending&expand=lines,lines.product&sort=-createdAt,id`.
 - [ ] `parseCompactQuery` — the compact form where nesting is not needed:
       `?status=in:active,pending`.
@@ -33,12 +34,15 @@ is what makes pagination stable under concurrent inserts.
 ### `contracts/`
 - [ ] `paginatedResponse(schema)`, `standardErrors`, `listQueryParams` (ts-rest building blocks).
 
-### `client/`
-- [ ] `createTypedClient` and interceptors: `bearerAuth`, `retryOn5xx`, `timeout`,
-      `correlationId`.
-
 ### `status/`
 - [ ] `HTTP_STATUS`, `isRetryable(status)`.
+
+## Not in this package — use a library
+
+| Was going to be here | Use instead |
+|---|---|
+| `createTypedClient` + `bearerAuth`/`retryOn5xx`/`timeout`/`correlationId` interceptors | **`@ts-rest/core`** `initClient` / `initQueryClient`; configure headers, retries and timeouts on the client directly |
+| A hand-rolled bracket parser | **`qs`** (wrapped by the `qs/` module above) |
 
 ## Verification gate
 

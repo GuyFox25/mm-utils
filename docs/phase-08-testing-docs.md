@@ -8,21 +8,27 @@ runnable README per package. This is the phase that lets a fresh clone go green 
 
 ## Why this matters
 
-Every prior phase asserted a testing gate; this phase provides the shared machinery those tests
-lean on — deterministic factories and a transactional test database that rolls back after each
-test, so integration tests are isolated without truncating between runs.
+Every prior phase asserted a testing gate; this phase provides the one piece of shared
+machinery those tests lean on that no library gives us — a transactional test database that
+rolls back after each test, so integration tests are isolated without truncating between runs.
+(Fixture data comes from `fishery` + `@faker-js/faker`, not a home-grown factory.)
 
 ## Implementation targets
 
-### `factories/`
-- [ ] `buildFactory<T>(defaults)` — deterministic defaults with per-call overrides.
-
 ### `db/`
 - [ ] `withTestDb` — runs each test inside a transaction that is **rolled back** afterwards.
+      This is the genuine value-add: it is tied to the `DbOrTx` seam from Phase 6, which no
+      generic library knows about.
 - [ ] `truncateAll` — for the cases that genuinely need a clean slate.
 
 ### `nest/`
 - [ ] `createTestingModule` — a Nest testing module with the standard overrides pre-wired.
+
+## Not in this package — use a library
+
+| Was going to be here | Use instead |
+|---|---|
+| `buildFactory<T>(defaults)` | **fishery** for factory definitions + **@faker-js/faker** for realistic data |
 
 ### Docs
 - [ ] A `README.md` per package (`core`, `zod`, `http`, `drizzle`, `nest`, `testing`) with a
