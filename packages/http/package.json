@@ -1,0 +1,40 @@
+{
+  "name": "@kit/http",
+  "version": "0.0.0",
+  "description": "HTTP envelopes, cursors, query-string parsing, ts-rest contracts, and a typed client. Safe in browsers.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@kit/core": "workspace:^",
+    "@kit/zod": "workspace:^",
+    "@ts-rest/core": "^3.52.1",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@kit/core": "workspace:*",
+    "@kit/zod": "workspace:*",
+    "@ts-rest/core": "^3.52.1",
+    "zod": "^4.4.3"
+  }
+}

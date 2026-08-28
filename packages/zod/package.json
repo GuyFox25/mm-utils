@@ -1,0 +1,36 @@
+{
+  "name": "@kit/zod",
+  "version": "0.0.0",
+  "description": "Zod primitives, coercion, and the filter/expand/query DSL builders. Safe in browsers.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "eslint src",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "peerDependencies": {
+    "@kit/core": "workspace:^",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@kit/core": "workspace:*",
+    "zod": "^4.4.3"
+  }
+}
