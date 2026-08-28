@@ -24,7 +24,7 @@ column" gate falls out almost for free.
 
 ### `columns/`
 - [ ] `id()` (`generatedAlwaysAsIdentity`), `timestamps()` (`timestamptz`), `softDelete()`,
-      `version()`, `moneyCents()` (**bigint, never `numeric`**).
+      `version()`.
 
 ### `naming/`
 - [ ] `idx()`, `uq()`, `fk()`, `chk()` — enforce the `idx_` / `uq_` / `fk_` / `chk_` prefixes.
@@ -55,7 +55,6 @@ The wrapper must correct all four raw behaviours:
 
 - Do **not** re-export `deep-object-diff`. It is wrapped for the four reasons above.
 - Deep-diffing a flat row wastes work and invites the sparse-array bug — keep `deepKeys` opt-in.
-- `moneyCents()` is `bigint`; pairing it with `numeric` reintroduces float rounding.
 - **Entity schemas are drizzle-zod's job, not the kit's.** Once a project defines its Drizzle
   table with the column presets here, it derives create/update/select Zod schemas with
   `drizzle-zod` (`createInsertSchema`/`createUpdateSchema`/`createSelectSchema`) and `.omit()`s

@@ -78,16 +78,15 @@ then debug.
       Gate: `pnpm install && pnpm -r build` passes; a plain Node script imports `@kit/core`.
 
 - [ ] **Phase 2 — `@kit/core`**
-      Scope: the `AppError` hierarchy, money-cents helpers, `invariant`/`assertNever`, and
-      the few type helpers the kit needs (`Brand`, `NonEmptyArray`).
-      *Not here:* `Result` (→ neverthrow), and array/object/string/number/date/async helpers
-      (→ lodash-es, date-fns, nanoid, p-*).
+      Scope: the `AppError` hierarchy and `invariant`/`assertNever`.
+      *Not here:* `Result` (→ neverthrow); array/object/string/number/date/async helpers
+      (→ lodash-es, date-fns, nanoid, p-*); type helpers (→ type-fest); anything
+      domain-opinionated like money/cents (→ project `utils/`).
       Gate: 100% of exports have tests; `pnpm why` shows zero runtime dependencies.
 
 - [ ] **Phase 3 — `@kit/zod`**
-      Scope: the opinionated primitives (`zMoneyCents`, `zSlug`, `zEnumFrom`, `zTrimmed`),
-      `zCsvArray`, `atLeastOneOf`, `buildFilterSchema`, `buildExpandSchema`,
-      `buildQuerySchema`.
+      Scope: the opinionated primitives (`zSlug`, `zEnumFrom`, `zTrimmed`), `zCsvArray`,
+      `atLeastOneOf`, `buildFilterSchema`, `buildExpandSchema`, `buildQuerySchema`.
       *Not here:* `zUuid/zEmail/zUrl/zIsoDate/…` — use zod v4 built-ins directly; entity
       create/update/select schemas — use drizzle-zod (Phase 5) with `.omit()`.
       Gate: a test proves an unlisted filter field, an unlisted expand path, and a

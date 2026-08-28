@@ -51,7 +51,7 @@ one.
 
 | Package | What lives here |
 |---|---|
-| [`@kit/core`](./packages/core) | The `AppError` hierarchy, money-cents helpers, `invariant`/`assertNever`, a few type helpers. |
+| [`@kit/core`](./packages/core) | The `AppError` hierarchy and `invariant`/`assertNever`. |
 | [`@kit/zod`](./packages/zod) | Opinionated Zod primitives and the filter/expand/query allow-list DSL. |
 | [`@kit/http`](./packages/http) | Envelopes, cursors, `qs`-backed query parsing, ts-rest contract blocks. |
 | [`@kit/drizzle`](./packages/drizzle) | `BaseCrudRepository`, column presets, `computePatch`, query/diff machinery. |
@@ -89,7 +89,7 @@ Requires **Node ≥ 20** and **pnpm 11**.
 - Arrow functions over `function` declarations. Blank line before every `return`.
 - Every public export has a TSDoc comment with at least one example.
 - Every package has an `index.ts` barrel; deep imports into `src/` are unsupported.
-- Money is integer cents. Timestamps are `timestamptz`. Constraint names use the
+- Timestamps are `timestamptz`. Constraint names use the
   `idx_` / `uq_` / `fk_` / `chk_` prefixes.
 - **Reach for a well-known library before writing a helper.** lodash-es, date-fns,
   type-fest, `@ts-rest/core`, drizzle-zod, nestjs-zod, `@nestjs/config`, `@nestjs/terminus`

@@ -1,7 +1,7 @@
 {
   "name": "@kit/core",
   "version": "0.0.0",
-  "description": "Zero-dependency primitives — types, Result, AppError hierarchy, guards, and pure utilities. Safe in browsers.",
+  "description": "Zero-dependency primitives — the AppError hierarchy and assertion guards. Safe in browsers.",
   "type": "module",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -17,8 +17,8 @@
     "access": "public"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "eslint src",

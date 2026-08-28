@@ -19,8 +19,7 @@ unlisted is rejected with `400` naming the offending parameter.
 ## Implementation targets
 
 ### `primitives/`
-- [ ] The opinionated few that zod core does not give you: `zMoneyCents`, `zSlug`,
-      `zEnumFrom`, `zTrimmed`.
+- [ ] The opinionated few that zod core does not give you: `zSlug`, `zEnumFrom`, `zTrimmed`.
 - [ ] **Do not wrap what zod v4 already ships.** Use `z.uuid()`, `z.email()`, `z.url()`,
       `z.iso.date()`, `z.iso.datetime()`, `z.int().positive()`, `z.string().min(1)` directly.
 

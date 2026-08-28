@@ -362,24 +362,22 @@ core/src/
 ├── errors/   AppError (abstract, carries `code` + `httpStatus`), NotFoundError,
 │             ConflictError, ValidationError, ForbiddenError, UnauthorizedError,
 │             RateLimitError, toErrorEnvelope, isAppError
-├── money/    toCents, fromCents, formatMoney — money is ALWAYS integer cents, never a float
-├── guards/   invariant, assertNever — the assertion and exhaustiveness backstops
-└── types/    Brand, NonEmptyArray — only the few the kit itself needs; reach for `type-fest`
-              for everything else
+└── guards/   invariant, assertNever — the assertion and exhaustiveness backstops
 ```
 
-> Dropped in favour of libraries: `Result` (→ neverthrow or throw `AppError`), and all of
-> `array/object/string/number/date/async` (→ lodash-es, date-fns, nanoid, p-*).
-> `UniqueTuple`/`HasDuplicates` are gone too — their only consumer, `stripMetaColumns`, is
-> replaced by drizzle-zod's `.omit()`.
+> Dropped in favour of libraries: `Result` (→ neverthrow or throw `AppError`); all of
+> `array/object/string/number/date/async` (→ lodash-es, date-fns, nanoid, p-*); type helpers
+> like `Brand`/`NonEmptyArray` (→ type-fest, or a local one when the kit itself needs it).
+> Anything domain-opinionated (money/cents, currency, units) stays in a project's own
+> `utils/`.
 
 ### @kit/zod — peer: zod
 
 ```
 zod/src/
-├── primitives/  zMoneyCents, zSlug, zEnumFrom, zTrimmed — the opinionated few. Use zod v4
-│                built-ins directly for the rest: z.uuid(), z.email(), z.url(),
-│                z.iso.datetime(), z.int().positive()
+├── primitives/  zSlug, zEnumFrom, zTrimmed — the opinionated few. Use zod v4 built-ins
+│                directly for the rest: z.uuid(), z.email(), z.url(), z.iso.datetime(),
+│                z.int().positive()
 ├── coerce/      zCsvArray — comma lists. (Booleans: z.stringbool(); numbers: z.coerce.number())
 ├── helpers/     atLeastOneOf — a `.refine` requiring one of a set of keys. (Entity
 │                create/update/select schemas come from drizzle-zod at the @kit/drizzle
@@ -413,7 +411,7 @@ drizzle/src/
 ├── types/       Db<TSchema>, Tx, DbOrTx, TableWithPk, PkColumnKey<T>, PkValue<T>,
 │                InferSelect<T>, InferInsert<T>, SearchQuery<T>, PageResult<T>
 ├── columns/     id() (generatedAlwaysAsIdentity), timestamps() (timestamptz),
-│                softDelete(), version(), moneyCents() (bigint, never numeric)
+│                softDelete(), version()
 ├── naming/      idx(), uq(), fk(), chk() — enforce the prefix conventions
 ├── repository/  base-crud.repository.ts, pk.ts (composite PK via getTableConfig)
 ├── diff/        computePatch, DiffOptions, PatchResult — the deep-object-diff wrapper
@@ -503,7 +501,7 @@ testing/src/
 - Arrow functions over `function` declarations. Blank line before every `return`.
 - Every public export has a TSDoc comment with at least one example.
 - Every package has an `index.ts` barrel; deep imports into `src/` are unsupported.
-- Money is integer cents. Timestamps are `timestamptz`. Index and constraint names use the
+- Timestamps are `timestamptz`. Index and constraint names use the
   `idx_` / `uq_` / `fk_` / `chk_` prefixes.
 - **Reach for a library before writing a helper.** See the table at the top.
 
@@ -517,8 +515,7 @@ Complete and verify each phase before starting the next.
 correct peer dependencies and barrels, changesets configured. *(complete)*
 *Gate:* `pnpm install && pnpm -r build` passes; a script importing `@kit/core` works.
 
-**Phase 2 — `@kit/core`.** `AppError` hierarchy, money-cents helpers, `invariant` /
-`assertNever`, and the handful of type helpers the kit needs.
+**Phase 2 — `@kit/core`.** `AppError` hierarchy and `invariant` / `assertNever`.
 *Gate:* 100% of exports have tests; `pnpm why` shows zero runtime dependencies.
 
 **Phase 3 — `@kit/zod`.** The opinionated primitives, `zCsvArray`, `atLeastOneOf`, and the
